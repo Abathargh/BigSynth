@@ -4,8 +4,8 @@
 
 ESP8266WebServer server(80);
  
-const char* ssid = "TIM-30109331";
-const char* password =  "WM0vE65nCZQGR908dKSFJ6QL";
+const char* ssid = "TIM-";
+const char* password =  "";
 
 String payload;
 
