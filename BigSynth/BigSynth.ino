@@ -24,11 +24,7 @@ Ay38910a chip ( dataPin, latchPin, clockPin, pinBC1, pinBCDIR, freqOutputPin, pr
 
 //Gestione input
 int pinEffetto = A0;
-int tipoEffetto = -1;
 int ottava = 0;
-boolean effettoOn = false;
-boolean uno = false, due = false, tre = true, quattro = false;
-int effetto = 0;
 int volume = 8;
 
 int numeroCanali = 3;
@@ -68,6 +64,7 @@ void setup () {
 void playNote( int tasto, int amplitude ) {
 
     int canaleDaAccendere = -1;
+    
     for ( int i = 0; canaleDaAccendere == -1 &&  i < numeroCanali; i++ )  {
     
         if ( canali[ i ] == -1 ) {
@@ -78,7 +75,7 @@ void playNote( int tasto, int amplitude ) {
 
                     chip.set_mix( true, canali[ 1 ] == -1 ? false : true , canali[ 2 ] == -1 ? false : true , false, false, false );
                     chip.set_chA_amplitude( amplitude, true );
-                    chip.note_chA( midiNotes[ tasto ] + ( ottava * 12) );
+                    chip.note_chA( midiNotes[ tasto ] + ( ottava * 12 ) );
                     canaleDaAccendere = 0;
                     break;
 
@@ -86,7 +83,7 @@ void playNote( int tasto, int amplitude ) {
                         
                     chip.set_mix( canali[ 0 ] == -1 ? false : true , true, canali[ 2 ] == -1 ? false : true , false, false, false );
                     chip.set_chB_amplitude( amplitude, true );
-                    chip.note_chB( midiNotes[ tasto ]  + ( ottava * 12) );
+                    chip.note_chB( midiNotes[ tasto ]  + ( ottava * 12 ) );
                     canaleDaAccendere = 1;
                     break;
 
@@ -94,7 +91,7 @@ void playNote( int tasto, int amplitude ) {
 
                     chip.set_mix( canali[ 0 ] == -1 ? false : true , canali[ 1 ] == -1 ? false : true , true, false, false, false );
                     chip.set_chC_amplitude( amplitude, true );
-                    chip.note_chC( midiNotes[ tasto ]  + ( ottava * 12) );
+                    chip.note_chC( midiNotes[ tasto ]  + ( ottava * 12 ) );
                     canaleDaAccendere = 2;
                     break;
 
@@ -130,6 +127,7 @@ void closeChannel( int tasto ) {
     int canale = noteToChannel[ tasto ];
 
     if ( canale != -1 ) {
+      
         switch ( canale ) {
         
             case 0:
@@ -191,32 +189,19 @@ void applicaEffetto ( int tipo ) {
             
         case 3 :
   
-            uno = true;
-            due = false;
-            tre = true;
-            quattro = false;
-            effetto = 300;
-            volume = 2;
-            chip.set_envelope( uno, due, tre, quattro, effetto );
+            chip.set_envelope( true, false, true, false, 300 );
     
             break;
         
         case 4 : 
         
-            uno = true;
-            due = false;
-            tre = false;
-            quattro = false;
-            effetto = 1000;
-            volume = 2;
-            chip.set_envelope( uno, due, tre, quattro, effetto );
+            chip.set_envelope( true , false, false, false, 1000 );
     
             break;
         
         case 5 :
 
             chip.set_envelope ( false, false, true, false, 0 );
-            volume = 8;
             break;
             
             
@@ -236,10 +221,12 @@ void loop() {
     
     if ( ESP_Serial.available() > 0 ) {
         
-        payload = ESP_Serial.readString().substring(0,1);
+        payload = ESP_Serial.readString().substring ( 0, 1 );
         Serial.println( payload );
         
         applicaEffetto( payload.toInt() );
+
+        delay(4);
     
     }//if serial
 
